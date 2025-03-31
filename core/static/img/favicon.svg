@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev/svgjs" width="220" height="60"><svg xmlns="http://www.w3.org/2000/svg" width="220" height="60" viewBox="0 0 400 100">
+  <style>
+    .title { font: bold 28px 'Poppins', sans-serif; fill: #0a3d62; }
+    .slogan { font: italic 14px 'Poppins', sans-serif; fill: #38ada9; }
+  </style>
+  <path d="M20 20 L40 30 L20 40 L24 32 L0 32 L0 28 L24 28 Z" fill="#38ada9"></path>
+  <text x="60" y="40" class="title" svgjs:data="{&quot;leading&quot;:&quot;1.3&quot;}">CashPilot</text>
+  <text x="60" y="65" class="slogan" svgjs:data="{&quot;leading&quot;:&quot;1.3&quot;}">Você no comando das suas finanças</text>
+</svg><style>@media (prefers-color-scheme: light) { :root { filter: none; } }
+@media (prefers-color-scheme: dark) { :root { filter: none; } }
+</style></svg>

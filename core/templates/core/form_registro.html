@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h5>{% if registro %}Editar{% else %}Novo{% endif %} Registro Financeiro</h5>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label>Nome do Registro</label>
+            <input type="text" name="nome" class="form-control" value="{{ registro.nome|default:'' }}" required>
+        </div>
+        <div class="mb-3">
+            <label>Ano de Referência</label>
+            <input type="number" name="ano" class="form-control" value="{{ registro.ano_ref|default:2025 }}" required>
+        </div>
+        <div class="mb-3">
+            <label>Mês de Referência</label>
+            <input type="number" name="mes" class="form-control" min="1" max="12" value="{{ registro.mes_ref|default:1 }}" required>
+        </div>
+        <div class="mb-3">
+            <label>Situação</label>
+            <select name="situacao" class="form-select">
+                <option value="PENDENTE" {% if registro.situacao == "PENDENTE" %}selected{% endif %}>Pendente</option>
+                <option value="QUITADA" {% if registro.situacao == "QUITADA" %}selected{% endif %}>Quitada</option>
+            </select>
+        </div>
+        <button class="btn btn-success">Salvar</button>
+        <a href="{% if registro %}{% url 'registro' registro.id %}{% else %}{% url 'home' %}{% endif %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

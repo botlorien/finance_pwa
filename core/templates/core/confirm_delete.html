@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4 text-center">
+    <h5>Tem certeza que deseja excluir "{{ obj }}"?</h5>
+    <form method="post">
+        {% csrf_token %}
+        <button class="btn btn-danger">Sim, excluir</button>
+        <a href="{% url url_cancelar pk %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

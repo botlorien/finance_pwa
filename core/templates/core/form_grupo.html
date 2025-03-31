@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h5>📦 Novo Grupo de {{ tipo|title }}</h5>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="nome" class="form-label">Nome do Grupo</label>
+            <input type="text" name="nome" id="nome" class="form-control" placeholder="Ex: Moradia, Salário, Cartão Nubank..." required>
+        </div>
+        <button type="submit" class="btn btn-primary">Criar</button>
+        <a href="{% url 'registro' registro.id %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

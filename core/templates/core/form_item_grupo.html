@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h5>Adicionar Item ao Grupo: {{ grupo.nome }}</h5>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-2">
+            <label>Nome</label>
+            <input type="text" name="nome" class="form-control" required>
+        </div>
+        <div class="mb-2">
+            <label>Valor</label>
+            <input type="number" name="valor" class="form-control" step="0.01" required>
+        </div>
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" name="checked" checked>
+            <label class="form-check-label">Ativo (Contabilizar valor)</label>
+        </div>
+        <button class="btn btn-primary">Salvar</button>
+        <a href="{% url 'grupo' grupo.id %}" class="btn btn-secondary">Voltar</a>
+    </form>
+</div>
+{% endblock %}

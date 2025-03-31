@@ -1,0 +1,10 @@
+<!-- static/img/cashpilot-logo.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="60" viewBox="0 0 400 100">
+  <style>
+    .title { font: bold 28px 'Poppins', sans-serif; fill: #0a3d62; }
+    .slogan { font: italic 14px 'Poppins', sans-serif; fill: #38ada9; }
+  </style>
+  <path d="M20 20 L40 30 L20 40 L24 32 L0 32 L0 28 L24 28 Z" fill="#38ada9"/>
+  <text x="60" y="40" class="title">CashPilot</text>
+  <text x="60" y="65" class="slogan">Você no comando das suas finanças</text>
+</svg>
