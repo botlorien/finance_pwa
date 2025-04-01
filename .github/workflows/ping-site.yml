@@ -1,0 +1,17 @@
+name: Ping Finance PWA
+
+on:
+  # Agendamento via cron:
+  schedule:
+    # A sintaxe cron abaixo executa a cada 30 minutos:
+    - cron: '*/10 * * * *'
+  # Opcional: permite rodar manualmente pelo botão "Run workflow" no GitHub Actions:
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping aplicativo
+        run: |
+          curl -I https://finance-pwa.onrender.com/
