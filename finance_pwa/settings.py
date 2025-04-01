@@ -106,7 +106,7 @@ DATABASES = {
 }
 
 DATABASES['default']['OPTIONS'] = {
-    'options': '-c search_path=cashpilot,public'
+    'options': '-c search_path=cashpilot'
 }
 
 # Password validation
