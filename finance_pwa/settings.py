@@ -84,6 +84,8 @@ TEMPLATES = [
     },
 ]
 
+TEMPLATES[0]['OPTIONS']['debug'] = True
+
 WSGI_APPLICATION = 'finance_pwa.wsgi.application'
 
 
@@ -183,3 +185,5 @@ PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'core', 'static', 'js', 'servic
 
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
+ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/'
+

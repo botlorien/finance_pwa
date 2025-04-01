@@ -43,6 +43,9 @@
   <div class="offcanvas-body">
     <a href="{% url 'home' %}" class="btn btn-outline-primary w-100 my-1">🏠 Home</a>
     <a href="{% url 'dashboard' %}" class="btn btn-outline-primary w-100 my-1">📊 Dashboard</a>
+    <a href="{% url 'account_logout' %}" class="btn btn-outline-danger btn-sm" onclick="return confirm('Deseja sair da sua conta?')">
+      🔒 Logout
+  </a>
   </div>
 </div>
 {% endblock %}

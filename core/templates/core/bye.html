@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container text-center mt-5">
+    <h2>👋 Até logo!</h2>
+    <p>Você saiu da sua conta com sucesso.</p>
+    <a href="{% url 'account_login' %}" class="btn btn-primary mt-3">🔐 Fazer login novamente</a>
+</div>
+{% endblock %}

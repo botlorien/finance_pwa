@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="container text-center mt-5">
+    <img src="{% static 'img/web-app-manifest-192x192.png' %}" width="72" class="mb-4" alt="CashPilot">
+    <h2 class="mb-3">Confirmar login com Google</h2>
+    <p class="lead">Clique no botão abaixo para acessar sua conta com segurança.</p>
+    <form method="post" action="">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger btn-lg shadow-sm px-5">✅ Continuar com Google</button>
+    </form>
+</div>
+{% endblock %}

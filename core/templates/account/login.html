@@ -1,31 +1,19 @@
 {% extends "base.html" %}
 {% load socialaccount %}
-
-{% block title %}Entrar{% endblock %}
+{% load static %}
 
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-md-6">
-    <h3 class="text-center mb-4">🔐 Entrar na sua conta</h3>
-    <form method="POST" action="{% url 'account_login' %}">
-      {% csrf_token %}
-      {{ form.as_p }}
+<div class="container fade-in d-flex flex-column align-items-center justify-content-center" style="min-height: 80vh;">
+    <img src="{% static 'img/web-app-manifest-192x192.png' %}" alt="CashPilot Logo" class="mb-4" width="96" height="96">
 
-      <div class="d-grid">
-        <button type="submit" class="btn btn-primary">Entrar</button>
-      </div>
-    </form>
+    <h1 class="fw-bold mb-3">Bem-vindo ao <span class="text-primary">CashPilot</span></h1>
+    <p class="lead text-center mb-4">Controle financeiro simplificado. Acompanhe receitas, despesas e saldo de forma inteligente.</p>
 
-    <div class="text-center mt-3">
-      <a href="{% url 'account_signup' %}">Não tem conta? Cadastre-se</a>
-    </div>
-
-    <div class="text-center mt-3">
-      {% providers_media_js %}
-      <a href="{% provider_login_url 'google' method='oauth2' %}" class="btn btn-outline-dark w-100">
+    <a href="{% provider_login_url 'google' %}" class="btn btn-lg btn-danger shadow-sm d-flex align-items-center px-4">
+        <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google Icon" width="24" class="me-2">
         Entrar com Google
-      </a>
-    </div>
-  </div>
+    </a>
+
+    <p class="text-muted mt-4 small">Seu acesso é seguro e feito via sua conta Google.</p>
 </div>
 {% endblock %}

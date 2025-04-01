@@ -20,6 +20,7 @@ urlpatterns = [
     path('deletar-receita/<int:pk>/', views.deletar_receita, name='deletar_receita'),
     path('registro/<int:pk>/excluir/', views.deletar_registro, name='deletar_registro'),
     path('offline/', views.offline, name='offline'),
+    path('bye/', views.bye, name='bye'),
 
 
 ]

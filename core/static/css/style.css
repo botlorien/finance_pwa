@@ -31,3 +31,10 @@ body {
     height: auto !important;
   }
   
+  .fade-in {
+    animation: fadeIn 0.8s ease-in-out both;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}

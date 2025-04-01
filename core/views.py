@@ -319,3 +319,7 @@ def deletar_registro(request, pk):
 
 def offline(request):
     return render(request, 'core/offline.html')
+
+def bye(request):
+    return render(request, 'core/bye.html')
+
