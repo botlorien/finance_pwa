@@ -1,5 +1,17 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
+<style>
+    body::before {
+      content: "🚀 CSS aplicado!";
+      color: green;
+      font-size: 14px;
+      position: absolute;
+      top: 5px;
+      right: 10px;
+    }
+  </style>
+  
 <div class="container mt-3">
   <h5 class="text-center mb-3">
     {{ registro.nome }} - {{ registro.situacao }}
@@ -48,42 +60,40 @@
         <!-- DESPESAS - estilo chat lado esquerdo -->
         {% for d in despesas %}
         <div class="d-flex justify-content-start mb-2">
-            <div class="bg-danger text-white p-2 rounded shadow-sm position-relative">
-                {% if d.item %}
-                <a href="{% url 'editar_item' d.item.id %}" class="stretched-link text-white text-decoration-none">
-                  {{ d.item.nome }}<br>
-                  R$ {{ d.item.valor }}
+          <div class="balao-esquerda {% if d.grupo %}balao-grupo{% endif %} position-relative">
+            {% if d.item %}
+              <a href="{% url 'editar_item' d.item.id %}">
+                {{ d.item.nome }}<br>R$ {{ d.item.valor }}
               </a>
-                {% elif d.grupo %}
-                <a href="{% url 'grupo' d.grupo.id %}" class="stretched-link text-white text-decoration-none">
-                  {{ d.grupo.nome }}<br>
-                  R$ {{ d.grupo.valor_total }}
+            {% elif d.grupo %}
+              <a href="{% url 'grupo' d.grupo.id %}" class="fw-bold">
+                <i class="bi bi-folder-fill me-1"></i>{{ d.grupo.nome }}<br>R$ {{ d.grupo.valor_total }}
               </a>
-                {% endif %}
-                <a href="{% url 'deletar_despesa' d.id %}" onclick="return confirm('Excluir despesa?')" class="position-absolute top-0 start-100 translate-middle text-white text-decoration-none">×</a>
-            </div>
+            {% endif %}
+            <a href="{% url 'deletar_despesa' d.id %}" onclick="return confirm('Excluir despesa?')" class="position-absolute top-0 end-0 text-decoration-none px-1">×</a>
+          </div>
         </div>
-    {% endfor %}
+      {% endfor %}
+       
     
         <!-- RECEITAS - estilo chat lado direito -->
         {% for r in receitas %}
         <div class="d-flex justify-content-end mb-2">
-            <div class="bg-success text-white p-2 rounded shadow-sm position-relative">
-                {% if r.item %}
-                <a href="{% url 'editar_item' r.item.id %}" class="stretched-link text-white text-decoration-none">
-                  {{ r.item.nome }}<br>
-                  R$ {{ r.item.valor }}
+          <div class="balao-direita {% if r.grupo %}balao-grupo{% endif %} position-relative">
+            {% if r.item %}
+              <a href="{% url 'editar_item' r.item.id %}">
+                {{ r.item.nome }}<br>R$ {{ r.item.valor }}
               </a>
-                {% elif r.grupo %}
-                <a href="{% url 'grupo' r.grupo.id %}" class="stretched-link text-white text-decoration-none">
-                  {{ r.grupo.nome }}<br>
-                  R$ {{ r.grupo.valor_total }}
+            {% elif r.grupo %}
+              <a href="{% url 'grupo' r.grupo.id %}" class="fw-bold">
+                <i class="bi bi-folder-fill me-1"></i>{{ r.grupo.nome }}<br>R$ {{ r.grupo.valor_total }}
               </a>
-                {% endif %}
-                <a href="{% url 'deletar_receita' r.id %}" onclick="return confirm('Excluir receita?')" class="position-absolute top-0 start-0 translate-middle text-white text-decoration-none">×</a>
-            </div>
+            {% endif %}
+            <a href="{% url 'deletar_receita' r.id %}" onclick="return confirm('Excluir receita?')" class="position-absolute top-0 start-0 text-decoration-none px-1">×</a>
+          </div>
         </div>
-    {% endfor %}
+      {% endfor %}
+      
     
     </div>
 </div>

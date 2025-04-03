@@ -1,40 +1,180 @@
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
-  
-  .card {
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-  }
-  
-  #chat-area .bg-danger {
-    background-color: #dc3545 !important;
-  }
-  
-  #chat-area .bg-success {
-    background-color: #198754 !important;
-  }
-  
-  #chat-area .bg-primary {
-    background-color: #0d6efd !important;
-  }
-  
-  .btn-close {
-    font-size: 0.7rem;
-  }
-  
-  .list-group-item input[type="checkbox"] {
-    transform: scale(1.3);
-  }
-  
-  canvas {
-    max-width: 100%;
-    height: auto !important;
-  }
-  
-  .fade-in {
-    animation: fadeIn 0.8s ease-in-out both;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
+
+.card {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+#chat-area .bg-danger {
+  background-color: #dc3545 !important;
+}
+
+#chat-area .bg-success {
+  background-color: #198754 !important;
+}
+
+#chat-area .bg-primary {
+  background-color: #0d6efd !important;
+}
+
+.btn-close {
+  font-size: 0.7rem;
+}
+
+.list-group-item input[type="checkbox"] {
+  transform: scale(1.3);
+}
+
+canvas {
+  max-width: 100%;
+  height: auto !important;
+}
+
+.fade-in {
+  animation: fadeIn 0.8s ease-in-out both;
+}
+
+.grupo-badge {
+  background-color: #5bc0de;
+  color: #fff;
+}
+
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 🎨 Modo escuro - Inputs, textos, bordas */
+[data-bs-theme="dark"] input,
+[data-bs-theme="dark"] select,
+[data-bs-theme="dark"] textarea {
+  background-color: #1e1e1e;
+  color: #f1f1f1;
+  border-color: #444;
+}
+
+[data-bs-theme="dark"] input::placeholder,
+[data-bs-theme="dark"] textarea::placeholder {
+  color: #aaa;
+}
+
+[data-bs-theme="dark"] label {
+  color: #ccc;
+}
+
+[data-bs-theme="dark"] {
+  color: #f8f9fa;
+}
+
+[data-bs-theme="dark"] .btn {
+  color: #fff;
+}
+
+[data-bs-theme="dark"] .badge {
+  color: #000 !important;
+}
+
+[data-bs-theme="dark"] .card,
+[data-bs-theme="dark"] .border,
+[data-bs-theme="dark"] .list-group-item {
+  background-color: #1e1e1e;
+  color: #f8f9fa;
+  border-color: #3a3a3a;
+}
+
+/* 🟢💬 Balões estilo WhatsApp */
+
+/* 🔘 Balão base */
+.balao-esquerda,
+.balao-direita,
+.balao-grupo {
+  position: relative;
+  padding: 0.75rem 1rem;
+  max-width: 75%;
+  word-wrap: break-word;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 1rem;
+  display: inline-block;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+/* 🔴 Balão Esquerdo (Despesas) */
+.balao-esquerda {
+  background-color: #f8d7da;
+  color: #842029;
+  border-radius: 1rem 1rem 1rem 0.25rem;
+}
+
+.balao-esquerda::before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: 10px;
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-right: 10px solid #f8d7da;
+  border-bottom: 10px solid transparent;
+}
+
+/* 🟢 Balão Direito (Receitas) */
+.balao-direita {
+  background-color: #d1e7dd;
+  color: #0f5132;
+  border-radius: 1rem 1rem 0.25rem 1rem;
+}
+
+.balao-direita::before {
+  content: "";
+  position: absolute;
+  right: -10px;
+  top: 10px;
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-left: 10px solid #d1e7dd;
+  border-bottom: 10px solid transparent;
+}
+
+/* 🟡 Grupo (Balão com destaque especial) */
+.balao-grupo {
+  background-color: #fff3cd !important;
+  color: #664d03 !important;
+  font-weight: bold;
+}
+
+.balao-grupo::before {
+  display: none;
+}
+
+/* 🔗 Links dentro dos balões herdam cor e removem sublinhado */
+.balao-esquerda a,
+.balao-direita a,
+.balao-grupo a {
+  color: inherit !important;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.balao-esquerda a:hover,
+.balao-direita a:hover,
+.balao-grupo a:hover {
+  text-decoration: underline;
+}
+
+[data-bs-theme="dark"] .balao-esquerda {
+  background-color: #7a1f2d !important;
+  color: #fff !important;
+}
+
+[data-bs-theme="dark"] .balao-direita {
+  background-color: #155e4b !important;
+  color: #fff !important;
+}
+
+[data-bs-theme="dark"] .balao-grupo {
+  background-color: #786c3c !important;
+  color: #fff !important;
 }

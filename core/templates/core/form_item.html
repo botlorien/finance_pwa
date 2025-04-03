@@ -1,21 +1,43 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container mt-4">
-    <h5>{% if item %}Editar{% else %}Adicionar{% endif %} {{ tipo|title }}</h5>
+    <h5>{% if form.instance.pk %}Editar{% else %}Adicionar{% endif %} {{ tipo|title }}</h5>
+
     <form method="post">
         {% csrf_token %}
-        <div class="mb-2">
-            <label>Nome</label>
-            <input type="text" name="nome" value="{{ item.nome|default:'' }}" class="form-control" required>
+
+        <!-- Campo NOME com sugestões -->
+        <div class="mb-3">
+            {{ form.nome.label_tag }}
+            <input type="text" name="nome" id="id_nome" class="form-control"
+                   value="{{ form.nome.value|default:'' }}" list="sugestoes">
+            <datalist id="sugestoes">
+                {% for nome in sugestoes %}
+                    <option value="{{ nome }}">
+                {% endfor %}
+            </datalist>
+            {% if form.nome.errors %}
+                <div class="text-danger small">{{ form.nome.errors }}</div>
+            {% endif %}
         </div>
-        <div class="mb-2">
-            <label>Valor</label>
-            <input type="number" step="0.01" name="valor" value="{{ item.valor|default:'' }}" class="form-control" required>
+
+        <!-- Campo VALOR -->
+        <div class="mb-3">
+            {{ form.valor.label_tag }}
+            {{ form.valor }}
+            {% if form.valor.errors %}
+                <div class="text-danger small">{{ form.valor.errors }}</div>
+            {% endif %}
         </div>
+
+        <!-- Checkbox CONTABILIZAR -->
         <div class="form-check mb-3">
-            <input class="form-check-input" type="checkbox" name="checked" id="checked" {% if item.checked %}checked{% endif %}>
-            <label class="form-check-label" for="checked">Contabilizar (ativo)</label>
+            {{ form.checked }}
+            <label for="{{ form.checked.id_for_label }}" class="form-check-label">
+                Contabilizar (ativo)
+            </label>
         </div>
+
         <button class="btn btn-primary">Salvar</button>
         <a href="{% url 'registro' registro.id %}" class="btn btn-secondary">Cancelar</a>
     </form>

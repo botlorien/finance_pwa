@@ -8,7 +8,7 @@
     <div class="mt-4">
       {% for r in registros %}
       <div class="d-flex justify-content-between align-items-center my-2 border rounded p-2">
-        <a href="{% url 'registro' r.pk %}" class="text-decoration-none text-dark flex-grow-1">
+        <a href="{% url 'registro' r.pk %}" class="text-decoration-none flex-grow-1">
           {{ r.nome }}
           <span class="badge {% if r.situacao == 'PENDENTE' %}bg-warning text-dark{% else %}bg-success{% endif %}">
             {{ r.situacao }}
