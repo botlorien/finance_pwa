@@ -37,7 +37,15 @@
                 Contabilizar (ativo)
             </label>
         </div>
-
+        
+        <div class="mb-3">
+            {{ form.prioridade.label_tag }}
+            {{ form.prioridade }}
+            {% if form.prioridade.errors %}
+              <div class="text-danger small">{{ form.prioridade.errors }}</div>
+            {% endif %}
+          </div>
+          
         <button class="btn btn-primary">Salvar</button>
         <a href="{% url 'registro' registro.id %}" class="btn btn-secondary">Cancelar</a>
     </form>

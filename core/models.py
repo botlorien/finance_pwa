@@ -23,6 +23,7 @@ class Item(models.Model):
     nome = models.CharField(max_length=100)
     valor = models.DecimalField(max_digits=10, decimal_places=2)
     checked = models.BooleanField(default=True)
+    prioridade = models.PositiveIntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.nome
@@ -30,12 +31,19 @@ class Item(models.Model):
 class Grupo(models.Model):
     nome = models.CharField(max_length=100)
     itens = models.ManyToManyField(Item)
-
+    prioridade = models.PositiveIntegerField(null=True, blank=True)  # <--- aqui
     def valor_total(self):
         return sum(item.valor for item in self.itens.filter(checked=True))
 
     def __str__(self):
         return self.nome
+    
+    @property
+    def itens_ordenados(self):
+        return sorted(
+            self.itens.all(),
+            key=lambda i: i.prioridade if i.prioridade is not None else 9999
+        )
 
 class Despesa(models.Model):
     registro = models.ForeignKey(Registro, on_delete=models.CASCADE)

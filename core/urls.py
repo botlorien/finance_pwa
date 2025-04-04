@@ -13,6 +13,7 @@ urlpatterns = [
     path('adicionar-receita/', views.adicionar_receita, name='adicionar_receita'),
     path('adicionar-despesa/', views.adicionar_despesa, name='adicionar_despesa'),
     path('criar-grupo/', views.criar_grupo, name='criar_grupo'),
+    path('grupo/<int:grupo_id>/editar/', views.grupo_editar, name='grupo_editar'),
     path('grupo/<int:pk>/', views.grupo, name='grupo'),
     path('grupo/<int:pk>/adicionar-item/', views.grupo_adicionar_item, name='grupo_adicionar_item'),
     path('grupo/<int:grupo_id>/editar-item/<int:item_id>/', views.grupo_editar_item, name='grupo_editar_item'),

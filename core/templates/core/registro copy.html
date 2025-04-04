@@ -18,17 +18,17 @@
 </h5>
   
     <div class="d-flex justify-content-between text-center mb-4">
-        <div class="card w-100 mx-1 card-total card-despesa text-dark border-0">
+        <div class="card w-100 mx-1 bg-danger text-white">
             <div class="card-body">
                 <strong>Despesas</strong><br>R$ {{ total_despesas }}
             </div>
         </div>
-        <div class="card w-100 mx-1 bg-success text-white border-0">
+        <div class="card w-100 mx-1 bg-success text-white">
             <div class="card-body">
                 <strong>Receitas</strong><br>R$ {{ total_receitas }}
             </div>
         </div>
-        <div class="card w-100 mx-1 bg-primary text-white border-0">
+        <div class="card w-100 mx-1 bg-primary text-white">
             <div class="card-body">
                 <strong>Saldo</strong><br>R$ {{ saldo }}
             </div>
@@ -58,7 +58,7 @@
 
     <div class="mb-5">
         <!-- DESPESAS - estilo chat lado esquerdo -->
-        {% for tipo, d, prioridade in despesas %}
+        {% for d in despesas %}
         <div class="d-flex justify-content-start mb-2">
           <div class="balao-esquerda {% if d.grupo %}balao-grupo{% endif %} position-relative">
             {% if d.item %}
@@ -70,17 +70,14 @@
                 <i class="bi bi-folder-fill me-1"></i>{{ d.grupo.nome }}<br>R$ {{ d.grupo.valor_total }}
               </a>
             {% endif %}
-            {% if tipo == 'despesa' and d.id %}
-              <a href="{% url 'deletar_despesa' d.id %}" onclick="return confirm('Excluir despesa?')" class="position-absolute top-0 end-0 text-decoration-none px-1">×</a>
-            {% endif %}
+            <a href="{% url 'deletar_despesa' d.id %}" onclick="return confirm('Excluir despesa?')" class="position-absolute top-0 end-0 text-decoration-none px-1">×</a>
           </div>
         </div>
-        {% endfor %}
-        
+      {% endfor %}
        
     
         <!-- RECEITAS - estilo chat lado direito -->
-        {% for tipo, r, prioridade in receitas %}
+        {% for r in receitas %}
         <div class="d-flex justify-content-end mb-2">
           <div class="balao-direita {% if r.grupo %}balao-grupo{% endif %} position-relative">
             {% if r.item %}
@@ -92,13 +89,10 @@
                 <i class="bi bi-folder-fill me-1"></i>{{ r.grupo.nome }}<br>R$ {{ r.grupo.valor_total }}
               </a>
             {% endif %}
-            {% if tipo == 'receita' and r.id %}
-              <a href="{% url 'deletar_receita' r.id %}" onclick="return confirm('Excluir receita?')" class="position-absolute top-0 start-0 text-decoration-none px-1">×</a>
-            {% endif %}
+            <a href="{% url 'deletar_receita' r.id %}" onclick="return confirm('Excluir receita?')" class="position-absolute top-0 start-0 text-decoration-none px-1">×</a>
           </div>
         </div>
-        {% endfor %}
-        
+      {% endfor %}
       
     
     </div>

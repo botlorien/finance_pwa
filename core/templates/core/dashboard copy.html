@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-3">
+    <h4 class="text-center mb-3">📊 Dashboard</h4>
+
+    <form method="get" class="row g-2 mb-4">
+      <div class="col-md-4">
+          <label for="ano" class="form-label">Ano</label>
+          <select name="ano" id="ano" class="form-select">
+              <option value="">Todos</option>
+              {% for a in anos %}
+                  <option value="{{ a }}" {% if a|stringformat:"s" == ano %}selected{% endif %}>{{ a }}</option>
+              {% endfor %}
+          </select>
+      </div>
+      <div class="col-md-4">
+          <label for="mes" class="form-label">Mês</label>
+          <select name="mes" id="mes" class="form-select">
+              <option value="">Todos</option>
+              {% for m in meses %}
+                  <option value="{{ m }}" {% if m|stringformat:"s" == mes %}selected{% endif %}>{{ m }}</option>
+              {% endfor %}
+          </select>
+      </div>
+      <div class="col-md-4">
+          <label for="item" class="form-label">Item</label>
+          <select name="item" id="item" class="form-select">
+              <option value="">Todos</option>
+              {% for i in itens %}
+                  <option value="{{ i }}" {% if i == item_nome %}selected{% endif %}>{{ i }}</option>
+              {% endfor %}
+          </select>
+      </div>
+      <div class="col-12 text-end mt-2">
+          <button class="btn btn-primary">🔍 Filtrar</button>
+      </div>
+  </form>
+  
+
+    <!-- Gráfico Despesa/Receita/Saldo -->
+    <!-- <canvas id="graficoResumo" height="100"></canvas>
+    <canvas id="graficoPizza" height="100" class="mt-4"></canvas> -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            Resumo Financeiro
+        </div>
+        <div class="card-body">
+            <canvas id="graficoResumo" height="100"></canvas>
+            <canvas id="graficoPizza" height="100" class="mt-4"></canvas>
+        </div>
+    </div>
+    
+
+    <!-- Top 5 Despesas -->
+    <h6>🥇 Top 5 Despesas</h6>
+    <ul class="list-group mb-3">
+        {% for d in top_despesas %}
+            <li class="list-group-item d-flex justify-content-between">
+                <span>{{ d.nome }}</span>
+                <strong>R$ {{ d.total|default:"0.00" }}</strong>
+            </li>
+        {% empty %}
+            <li class="list-group-item text-muted">Nenhuma despesa encontrada</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Top 5 Receitas -->
+    <h6>💰 Top 5 Receitas</h6>
+    <ul class="list-group mb-3">
+        {% for r in top_receitas %}
+            <li class="list-group-item d-flex justify-content-between">
+                <span>{{ r.nome }}</span>
+                <strong>R$ {{ r.total|default:"0.00" }}</strong>
+            </li>
+        {% empty %}
+            <li class="list-group-item text-muted">Nenhuma receita encontrada</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Despesas Recorrentes -->
+    <h6>🔁 Despesas Recorrentes</h6>
+    <ul class="list-group mb-3">
+        {% for dr in despesas_repetidas %}
+            <li class="list-group-item d-flex justify-content-between">
+                <span>{{ dr.item__nome }}</span>
+                <small>Presente em {{ dr.qtd }} meses</small>
+            </li>
+        {% empty %}
+            <li class="list-group-item text-muted">Nenhuma despesa recorrente</li>
+        {% endfor %}
+    </ul>
+</div>
+
+<!-- ChartJS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+{{ total_despesa|default:0|json_script:"totalDespesa" }}
+{{ total_receita|default:0|json_script:"totalReceita" }}
+{{ saldo|default:0|json_script:"saldo" }}
+
+<script>
+    const totalDespesa = JSON.parse(document.getElementById('totalDespesa').textContent);
+    const totalReceita = JSON.parse(document.getElementById('totalReceita').textContent);
+    const saldo = JSON.parse(document.getElementById('saldo').textContent);
+
+    console.log("Despesas:", totalDespesa, "Receita:", totalReceita, "Saldo:", saldo);
+
+    const ctxResumo = document.getElementById('graficoResumo').getContext('2d');
+    new Chart(ctxResumo, {
+        type: 'bar',
+        data: {
+            labels: ['Despesas', 'Receitas', 'Saldo'],
+            datasets: [{
+                label: 'Valores',
+                data: [totalDespesa, totalReceita, saldo],
+                backgroundColor: [
+                    'rgba(220, 53, 69, 0.8)',
+                    'rgba(25, 135, 84, 0.8)',
+                    'rgba(13, 110, 253, 0.8)'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: context => {
+                            const valor = context.raw.toLocaleString('pt-BR', {
+                                style: 'currency',
+                                currency: 'BRL'
+                            });
+                            return `${context.label}: ${valor}`;
+                        }
+                    }
+                },
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: value => 'R$ ' + value
+                    }
+                }
+            }
+        }
+    });
+
+    // Gráfico de Pizza
+    const ctxPizza = document.getElementById('graficoPizza').getContext('2d');
+    new Chart(ctxPizza, {
+        type: 'pie',
+        data: {
+            labels: ['Despesas', 'Receitas'],
+            datasets: [{
+                label: 'Distribuição',
+                data: [totalDespesa, totalReceita],
+                backgroundColor: [
+                    'rgba(220, 53, 69, 0.7)',
+                    'rgba(25, 135, 84, 0.7)'
+                ],
+                borderColor: [
+                    'rgba(220, 53, 69, 1)',
+                    'rgba(25, 135, 84, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: context => {
+                            const valor = context.raw.toLocaleString('pt-BR', {
+                                style: 'currency',
+                                currency: 'BRL'
+                            });
+                            return `${context.label}: ${valor}`;
+                        }
+                    }
+                },
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#333',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+
+{% endblock %}

@@ -1,21 +1,44 @@
+:root {
+  /* 🎨 Paleta clara - estilo tech/economia moderna */
+  --color-bg-danger: #f8d7da;
+  --color-text-danger: #842029;
+  --color-bg-success: #d1e7dd;
+  --color-text-success: #0f5132;
+  --color-bg-primary: #cfe2ff;
+  --color-text-primary: #084298;
+  --color-bg-group: #fff3cd;
+  --color-text-group: #664d03;
+  --color-navbar: #2c3e50;
+
+  /* 🌑 Paleta escura */
+  --dark-bg: #1e1e1e;
+  --dark-card: #1e2a38;
+  --color-bg-danger-dark: #7a1f2d;
+  --color-bg-success-dark: #155e4b;
+  --color-bg-primary-dark: #2a4063;
+  --color-bg-group-dark: #786c3c;
+  --text-light: #ffffff;
+  --cor-verde-suave: #b8e0c5;
+  --cor-vermelho-suave: #f8c4c4;
+  --cor-azul-suave: #bcd4f6;
+  --cor-azul-escuro: #1d3557;
+  --cor-verde-dark: #1b4332;
+  --cor-vermelho-dark: #781c1c;
+  --color-despesa: #f8d7da;
+  --color-receita: #d1e7dd;
+  --color-saldo: #cfe2ff;
+  --text-dark: #1c1c1c;
+  --color-grupo: #fff3cd;
+}
+
+
+/* ✅ Geral */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .card {
   box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-}
-
-#chat-area .bg-danger {
-  background-color: #dc3545 !important;
-}
-
-#chat-area .bg-success {
-  background-color: #198754 !important;
-}
-
-#chat-area .bg-primary {
-  background-color: #0d6efd !important;
 }
 
 .btn-close {
@@ -35,55 +58,69 @@ canvas {
   animation: fadeIn 0.8s ease-in-out both;
 }
 
-.grupo-badge {
-  background-color: #5bc0de;
-  color: #fff;
-}
-
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* 🎨 Modo escuro - Inputs, textos, bordas */
-[data-bs-theme="dark"] input,
-[data-bs-theme="dark"] select,
-[data-bs-theme="dark"] textarea {
-  background-color: #1e1e1e;
-  color: #f1f1f1;
-  border-color: #444;
+/* Botões */
+.btn-suave-verde {
+  background-color: var(--cor-verde-suave);
+  color: #1f5132;
+  border: none;
+}
+.btn-suave-verde:hover {
+  background-color: #a4d6b3;
 }
 
-[data-bs-theme="dark"] input::placeholder,
-[data-bs-theme="dark"] textarea::placeholder {
-  color: #aaa;
+.btn-suave-vermelho {
+  background-color: var(--cor-vermelho-suave);
+  color: #842029;
+  border: none;
+}
+.btn-suave-vermelho:hover {
+  background-color: #f1abab;
 }
 
-[data-bs-theme="dark"] label {
-  color: #ccc;
+.btn-suave-azul {
+  background-color: var(--cor-azul-suave);
+  color: #0d3b66;
+  border: none;
+}
+.btn-suave-azul:hover {
+  background-color: #a7c3f3;
 }
 
-[data-bs-theme="dark"] {
-  color: #f8f9fa;
+/* Badges customizadas */
+.badge-pendente {
+  background-color: #fff3cd;
+  color: #664d03;
+}
+.badge-concluido {
+  background-color: #d1e7dd;
+  color: #0f5132;
 }
 
-[data-bs-theme="dark"] .btn {
-  color: #fff;
+/* 🎨 Navbar */
+.navbar.bg-primary {
+  background-color: var(--color-navbar) !important;
 }
 
-[data-bs-theme="dark"] .badge {
-  color: #000 !important;
+/* 🎯 Totais */
+.card.bg-danger {
+  background-color: var(--color-bg-danger) !important;
+  color: var(--color-text-danger) !important;
 }
 
-[data-bs-theme="dark"] .card,
-[data-bs-theme="dark"] .border,
-[data-bs-theme="dark"] .list-group-item {
-  background-color: #1e1e1e;
-  color: #f8f9fa;
-  border-color: #3a3a3a;
+.card.bg-success {
+  background-color: var(--color-bg-success) !important;
+  color: var(--color-text-success) !important;
 }
 
-/* 🟢💬 Balões estilo WhatsApp */
+.card.bg-primary {
+  background-color: var(--color-bg-primary) !important;
+  color: var(--color-text-primary) !important;
+}
 
 /* 🔘 Balão base */
 .balao-esquerda,
@@ -102,8 +139,8 @@ canvas {
 
 /* 🔴 Balão Esquerdo (Despesas) */
 .balao-esquerda {
-  background-color: #f8d7da;
-  color: #842029;
+  background-color: var(--color-bg-danger);
+  color: var(--color-text-danger);
   border-radius: 1rem 1rem 1rem 0.25rem;
 }
 
@@ -115,14 +152,14 @@ canvas {
   width: 0;
   height: 0;
   border-top: 10px solid transparent;
-  border-right: 10px solid #f8d7da;
+  border-right: 10px solid var(--color-bg-danger);
   border-bottom: 10px solid transparent;
 }
 
 /* 🟢 Balão Direito (Receitas) */
 .balao-direita {
-  background-color: #d1e7dd;
-  color: #0f5132;
+  background-color: var(--color-bg-success);
+  color: var(--color-text-success);
   border-radius: 1rem 1rem 0.25rem 1rem;
 }
 
@@ -134,14 +171,14 @@ canvas {
   width: 0;
   height: 0;
   border-top: 10px solid transparent;
-  border-left: 10px solid #d1e7dd;
+  border-left: 10px solid var(--color-bg-success);
   border-bottom: 10px solid transparent;
 }
 
-/* 🟡 Grupo (Balão com destaque especial) */
+/* 🟡 Balão Grupo */
 .balao-grupo {
-  background-color: #fff3cd !important;
-  color: #664d03 !important;
+  background-color: var(--color-bg-group) !important;
+  color: var(--color-text-group) !important;
   font-weight: bold;
 }
 
@@ -149,7 +186,7 @@ canvas {
   display: none;
 }
 
-/* 🔗 Links dentro dos balões herdam cor e removem sublinhado */
+/* 🔗 Links nos balões */
 .balao-esquerda a,
 .balao-direita a,
 .balao-grupo a {
@@ -164,17 +201,131 @@ canvas {
   text-decoration: underline;
 }
 
+/* 🌒 Dark Theme */
+[data-bs-theme="dark"] {
+  background-color: var(--dark-bg);
+  color: var(--text-light);
+}
+
+[data-bs-theme="dark"] .card,
+[data-bs-theme="dark"] .list-group-item {
+  background-color: var(--dark-card);
+  color: var(--text-light);
+  border-color: #3a3a3a;
+}
+
+[data-bs-theme="dark"] .bg-primary {
+  background-color: var(--dark-card) !important;
+}
+
+[data-bs-theme="dark"] .card.bg-danger {
+  background-color: var(--color-bg-danger-dark) !important;
+  color: var(--text-light) !important;
+}
+
+[data-bs-theme="dark"] .card.bg-success {
+  background-color: var(--color-bg-success-dark) !important;
+  color: var(--text-light) !important;
+}
+
+[data-bs-theme="dark"] .card.bg-primary {
+  background-color: var(--color-bg-primary-dark) !important;
+  color: var(--text-light) !important;
+}
+
 [data-bs-theme="dark"] .balao-esquerda {
-  background-color: #7a1f2d !important;
-  color: #fff !important;
+  background-color: var(--color-bg-danger-dark) !important;
+  color: var(--text-light) !important;
 }
 
 [data-bs-theme="dark"] .balao-direita {
-  background-color: #155e4b !important;
-  color: #fff !important;
+  background-color: var(--color-bg-success-dark) !important;
+  color: var(--text-light) !important;
 }
 
 [data-bs-theme="dark"] .balao-grupo {
-  background-color: #786c3c !important;
-  color: #fff !important;
+  background-color: var(--color-bg-group-dark) !important;
+  color: var(--text-light) !important;
+}
+
+[data-bs-theme="dark"] input,
+[data-bs-theme="dark"] select,
+[data-bs-theme="dark"] textarea {
+  background-color: var(--dark-bg);
+  color: var(--text-light);
+  border-color: #444;
+}
+
+[data-bs-theme="dark"] input::placeholder,
+[data-bs-theme="dark"] textarea::placeholder {
+  color: #aaa;
+}
+
+[data-bs-theme="dark"] label {
+  color: #ccc;
+}
+
+[data-bs-theme="dark"] .btn {
+  color: var(--text-light);
+}
+
+[data-bs-theme="dark"] .badge {
+  color: #000 !important;
+}
+
+.bg-total-despesa {
+  background-color: var(--color-despesa) !important;
+  color: var(--text-dark) !important;
+}
+
+.bg-total-receita {
+  background-color: var(--color-receita) !important;
+  color: var(--text-dark) !important;
+}
+
+.bg-total-saldo {
+  background-color: var(--color-saldo) !important;
+  color: var(--text-dark) !important;
+}
+
+[data-bs-theme="dark"] {
+  --color-despesa: #842029;
+  --color-receita: #155e4b;
+  --color-saldo: #0d6efd;
+  --text-dark: #f8f9fa;
+}
+
+/* =======================
+   💳 Cards Totais
+   ======================= */
+.card-total {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+.card-total:hover {
+  transform: translateY(-2px);
+}
+
+.card-despesa {
+  background-color: var(--color-despesa);
+}
+.card-receita {
+  background-color: var(--color-receita);
+}
+.card-saldo {
+  background-color: var(--color-saldo);
+}
+
+.card-total .card-body {
+  color: var(--text-dark);
+}
+
+.card-grupo {
+  background-color: var(--color-grupo);
+  color: var(--text-dark);
+}
+
+[data-bs-theme="dark"] .card-grupo {
+  background-color: #786c3c;
+  color: #fff;
 }

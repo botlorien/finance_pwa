@@ -4,7 +4,7 @@ from .models import Registro, Despesa, Receita, Item, Grupo
 from django.utils import timezone
 from django.db.models import Sum, Count, Q
 from datetime import datetime
-from .forms import ItemForm
+from .forms import ItemForm, GrupoForm
 from django.http import Http404
 from django.views.decorators.http import require_POST
 
@@ -56,22 +56,6 @@ def editar_registro(request, pk):
 
     return render(request, 'core/form_registro.html', {'registro': registro})
 
-# @login_required
-# def adicionar_despesa(request):
-#     registro_id = request.GET.get('registro')
-#     registro = get_object_or_404(Registro, pk=registro_id, user=request.user)
-
-#     if request.method == 'POST':
-#         nome = request.POST.get('nome')
-#         valor = float(request.POST.get('valor'))
-#         item = Item.objects.create(nome=nome, valor=valor, checked=True)
-#         Despesa.objects.create(registro=registro, item=item)
-#         return redirect('registro', pk=registro.id)
-
-#     return render(request, 'core/form_item.html', {
-#         'tipo': 'despesa',
-#         'registro': registro,
-#     })
 
 @login_required
 def adicionar_despesa(request):
@@ -79,54 +63,41 @@ def adicionar_despesa(request):
     registro = get_object_or_404(Registro, pk=registro_id, user=request.user)
 
     if request.method == 'POST':
-        form = ItemForm(request.POST)
+        form = ItemForm(request.POST or None, registro=registro, tipo='criacao')
         if form.is_valid():
             item = form.save()
             Despesa.objects.create(registro=registro, item=item)
             return redirect('registro', pk=registro.id)
     else:
-        form = ItemForm()
+        form = ItemForm(registro=registro, tipo='criacao')  # <-- Aqui estava o erro!
 
     return render(request, 'core/form_item.html', {
         'form': form,
         'registro': registro,
         'tipo': 'despesa',
+        'sugestoes': get_itens_do_usuario(request.user),
     })
 
-# @login_required
-# def adicionar_receita(request):
-#     registro_id = request.GET.get('registro')
-#     registro = get_object_or_404(Registro, pk=registro_id, user=request.user)
 
-#     if request.method == 'POST':
-#         nome = request.POST.get('nome')
-#         valor = float(request.POST.get('valor'))
-#         item = Item.objects.create(nome=nome, valor=valor, checked=True)
-#         Receita.objects.create(registro=registro, item=item)
-#         return redirect('registro', pk=registro.id)
-
-#     return render(request, 'core/form_item.html', {
-#         'tipo': 'receita',
-#         'registro': registro,
-#     })
 @login_required
 def adicionar_receita(request):
     registro_id = request.GET.get('registro')
     registro = get_object_or_404(Registro, pk=registro_id, user=request.user)
 
     if request.method == 'POST':
-        form = ItemForm(request.POST)
+        form = ItemForm(request.POST or None, registro=registro, tipo='receita')
         if form.is_valid():
             item = form.save()
             Receita.objects.create(registro=registro, item=item)
             return redirect('registro', pk=registro.id)
     else:
-        form = ItemForm()
+        form = ItemForm(registro=registro, tipo='receita')  # 🧩 Aqui estava o erro
 
     return render(request, 'core/form_item.html', {
         'form': form,
         'registro': registro,
         'tipo': 'receita',
+        'sugestoes': get_itens_do_usuario(request.user),
     })
 
 
@@ -136,6 +107,21 @@ def registro(request, pk):
 
     despesas = Despesa.objects.filter(registro=reg)
     receitas = Receita.objects.filter(registro=reg)
+
+    # Unificar em uma lista com tupla (tipo, objeto, prioridade)
+    despesas_unificadas = []
+    for d in despesas:
+        prioridade = d.item.prioridade if d.item else (d.grupo.prioridade if d.grupo else None)
+        despesas_unificadas.append(('despesa', d, prioridade or 9999))
+
+    receitas_unificadas = []
+    for r in receitas:
+        prioridade = r.item.prioridade if r.item else (r.grupo.prioridade if r.grupo else None)
+        receitas_unificadas.append(('receita', r, prioridade or 9999))
+
+    # Ordenar cada um por prioridade
+    despesas_ordenadas = sorted(despesas_unificadas, key=lambda x: x[2])
+    receitas_ordenadas = sorted(receitas_unificadas, key=lambda x: x[2])
 
     total_despesas = sum(
         d.item.valor if d.item else d.grupo.valor_total() for d in despesas
@@ -150,35 +136,12 @@ def registro(request, pk):
 
     return render(request, 'core/registro.html', {
         'registro': reg,
-        'despesas': despesas,
-        'receitas': receitas,
+        'despesas': despesas_ordenadas,
+        'receitas': receitas_ordenadas,
         'total_despesas': total_despesas,
         'total_receitas': total_receitas,
         'saldo': saldo,
     })
-
-# @login_required
-# def adicionar_item(request):
-#     tipo = request.GET.get('tipo')
-#     registro_id = request.GET.get('registro')
-#     registro = get_object_or_404(Registro, pk=registro_id, user=request.user)
-
-#     if request.method == 'POST':
-#         nome = request.POST.get('nome')
-#         valor = float(request.POST.get('valor'))
-#         item = Item.objects.create(nome=nome, valor=valor)
-        
-#         if tipo == 'despesa':
-#             Despesa.objects.create(registro=registro, item=item)
-#         else:
-#             Receita.objects.create(registro=registro, item=item)
-        
-#         return redirect('registro', pk=registro.id)
-
-#     return render(request, 'core/form_item.html', {
-#         'tipo': tipo,
-#         'registro': registro,
-#     })
 
 
 @login_required
@@ -188,7 +151,7 @@ def adicionar_item(request):
     registro = get_object_or_404(Registro, pk=registro_id, user=request.user)
 
     if request.method == 'POST':
-        form = ItemForm(request.POST)
+        form = ItemForm(request.POST, registro=registro, tipo='criacao')
         if form.is_valid():
             item = form.save()
             if tipo == 'despesa':
@@ -197,7 +160,7 @@ def adicionar_item(request):
                 Receita.objects.create(registro=registro, item=item)
             return redirect('registro', pk=registro.id)
     else:
-        form = ItemForm()
+        form = ItemForm(registro=registro, tipo='criacao')
 
     sugestoes = get_itens_do_usuario(request.user)
     return render(request, 'core/form_item.html', {
@@ -207,27 +170,6 @@ def adicionar_item(request):
         'sugestoes': sugestoes,
     })
 
-
-# @login_required
-# def editar_item(request, pk):
-#     item = get_object_or_404(Item, pk=pk)
-#     # procura onde esse item está (despesa ou receita)
-#     despesa = Despesa.objects.filter(item=item).first()
-#     receita = Receita.objects.filter(item=item).first()
-#     registro = despesa.registro if despesa else receita.registro if receita else None
-
-#     if request.method == 'POST':
-#         item.nome = request.POST.get('nome')
-#         item.valor = float(request.POST.get('valor'))
-#         item.checked = request.POST.get('checked') == 'on'
-#         item.save()
-#         return redirect('registro', pk=registro.id)
-
-#     return render(request, 'core/form_item.html', {
-#         'tipo': 'despesa' if despesa else 'receita',
-#         'registro': registro,
-#         'item': item
-#     })
 
 @login_required
 def editar_item(request, pk):
@@ -248,17 +190,19 @@ def editar_item(request, pk):
     registro = despesa.registro if despesa else receita.registro
 
     if request.method == 'POST':
-        form = ItemForm(request.POST, instance=item)
+        form = ItemForm(request.POST, instance=item, registro=registro, tipo=tipo)
         if form.is_valid():
             form.save()
             return redirect('registro', pk=registro.pk)
     else:
-        form = ItemForm(instance=item)
+        form = ItemForm(instance=item, registro=registro, tipo=tipo)
 
+    sugestoes = get_itens_do_usuario(request.user)
     return render(request, 'core/form_item.html', {
         'form': form,
         'registro': registro,
         'tipo': tipo,
+        'sugestoes': sugestoes,
     })
 
 
@@ -284,26 +228,58 @@ def atualizar_checked_item(request, item_id):
     return redirect(request.META.get('HTTP_REFERER', 'home'))
 
 
+# views.py
 @login_required
 def criar_grupo(request):
     tipo = request.GET.get('tipo')
     registro_id = request.GET.get('registro')
+
     registro = get_object_or_404(Registro, pk=registro_id, user=request.user)
 
     if request.method == 'POST':
-        nome = request.POST.get('nome')
-        grupo = Grupo.objects.create(nome=nome)
-
-        if tipo == 'despesa':
-            Despesa.objects.create(registro=registro, grupo=grupo)
-        else:
-            Receita.objects.create(registro=registro, grupo=grupo)
-
-        return redirect('grupo', pk=grupo.pk)
+        form = GrupoForm(request.POST, registro=registro, tipo='criacao')
+        if form.is_valid():
+            grupo = form.save()
+            if tipo == 'despesa':
+                Despesa.objects.create(registro=registro, grupo=grupo)
+            else:
+                Receita.objects.create(registro=registro, grupo=grupo)
+            return redirect('registro', pk=registro.id)
+    else:
+        form = GrupoForm(registro=registro, tipo='criacao')
 
     return render(request, 'core/form_grupo.html', {
+        'form': form,
+        'registro': registro,
         'tipo': tipo,
-        'registro': registro
+    })
+
+# views.py
+@login_required
+def grupo_editar(request, grupo_id):
+    grupo = get_object_or_404(Grupo, id=grupo_id)
+    # Confirma se o grupo pertence ao usuário
+    despesa = Despesa.objects.filter(grupo=grupo, registro__user=request.user).first()
+    receita = Receita.objects.filter(grupo=grupo, registro__user=request.user).first()
+
+    if not despesa and not receita:
+        raise Http404("Grupo não encontrado.")
+
+    registro = despesa.registro if despesa else receita.registro
+    tipo = 'despesa' if despesa else 'receita'
+
+    if request.method == 'POST':
+        form = GrupoForm(request.POST, instance=grupo, registro=registro, tipo=tipo)
+        if form.is_valid():
+            form.save()
+            return redirect('grupo', pk=grupo.id)
+    else:
+        form = GrupoForm(instance=grupo, registro=registro, tipo=tipo)
+
+    return render(request, 'core/form_grupo.html', {
+        'form': form,
+        'registro': registro,
+        'editando': True
     })
 
 
@@ -339,13 +315,13 @@ def grupo_adicionar_item(request, pk):
         raise Http404("Grupo não encontrado para este usuário.")
 
     if request.method == 'POST':
-        form = ItemForm(request.POST)
+        form = ItemForm(request.POST, registro=registro, tipo='criacao')
         if form.is_valid():
             item = form.save()
             grupo_obj.itens.add(item)
             return redirect('grupo', pk=grupo_obj.id)
     else:
-        form = ItemForm()
+        form = ItemForm(registro=registro, tipo='criacao')
 
     sugestoes = get_itens_do_usuario(request.user)
     return render(request, 'core/form_item_grupo.html', {
@@ -392,18 +368,21 @@ def grupo_editar_item(request, grupo_id, item_id):
     if not despesa and not receita:
         raise Http404("Grupo não encontrado ou não pertence a este usuário.")
 
+    registro = despesa.registro if despesa else receita.registro
+    tipo = 'despesa' if despesa else 'receita'
     # Verifica se o item pertence ao grupo
     item = get_object_or_404(Item, pk=item_id)
+
     if item not in grupo_obj.itens.all():
         raise Http404("Item não pertence a este grupo.")
 
     if request.method == 'POST':
-        form = ItemForm(request.POST, instance=item)
+        form = ItemForm(request.POST, instance=item, registro=registro, tipo=tipo)
         if form.is_valid():
             form.save()
             return redirect('grupo', pk=grupo_obj.id)
     else:
-        form = ItemForm(instance=item)
+        form = ItemForm(instance=item, registro=registro, tipo=tipo)
 
     return render(request, 'core/form_item_grupo.html', {
         'grupo': grupo_obj,

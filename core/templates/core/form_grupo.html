@@ -1,14 +1,28 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container mt-4">
-    <h5>📦 Novo Grupo de {{ tipo|title }}</h5>
+    <h5>{% if editando %}Editar{% else %}Adicionar{% endif %} Grupo</h5>
+
     <form method="post">
         {% csrf_token %}
+
         <div class="mb-3">
-            <label for="nome" class="form-label">Nome do Grupo</label>
-            <input type="text" name="nome" id="nome" class="form-control" placeholder="Ex: Moradia, Salário, Cartão Nubank..." required>
+            {{ form.nome.label_tag }}
+            {{ form.nome }}
+            {% if form.nome.errors %}
+                <div class="text-danger small">{{ form.nome.errors }}</div>
+            {% endif %}
         </div>
-        <button type="submit" class="btn btn-primary">Criar</button>
+
+        <div class="mb-3">
+            {{ form.prioridade.label_tag }}
+            {{ form.prioridade }}
+            {% if form.prioridade.errors %}
+                <div class="text-danger small">{{ form.prioridade.errors }}</div>
+            {% endif %}
+        </div>
+
+        <button class="btn btn-primary">Salvar</button>
         <a href="{% url 'registro' registro.id %}" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
