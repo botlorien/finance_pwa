@@ -32,6 +32,7 @@ class Grupo(models.Model):
     nome = models.CharField(max_length=100)
     itens = models.ManyToManyField(Item)
     prioridade = models.PositiveIntegerField(null=True, blank=True)  # <--- aqui
+    
     def valor_total(self):
         return sum(item.valor for item in self.itens.filter(checked=True))
 

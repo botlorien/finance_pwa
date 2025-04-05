@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<style>
+    body::before {
+      content: "🚀 CSS aplicado!";
+      color: green;
+      font-size: 14px;
+      position: absolute;
+      top: 5px;
+      right: 10px;
+    }
+  </style>
+  
+<div class="container mt-3">
+  <h5 class="text-center mb-3">
+    {{ registro.nome }} - {{ registro.situacao }}
+</h5>
+  
+    <div class="d-flex justify-content-between text-center mb-4">
+        <div class="card w-100 mx-1 card-total card-despesa text-dark border-0">
+            <div class="card-body">
+                <strong>Despesas</strong><br>R$ {{ total_despesas }}
+            </div>
+        </div>
+        <div class="card w-100 mx-1 bg-success text-white border-0">
+            <div class="card-body">
+                <strong>Receitas</strong><br>R$ {{ total_receitas }}
+            </div>
+        </div>
+        <div class="card w-100 mx-1 bg-primary text-white border-0">
+            <div class="card-body">
+                <strong>Saldo</strong><br>R$ {{ saldo }}
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between mb-3">
+        <div class="dropdown">
+            <button class="btn btn-outline-danger dropdown-toggle" data-bs-toggle="dropdown">
+                + Despesa
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'adicionar_despesa' %}?registro={{registro.id}}">Item</a></li>
+                <li><a class="dropdown-item" href="{% url 'criar_grupo' %}?tipo=despesa&registro={{registro.id}}">Grupo</a></li>
+            </ul>
+        </div>
+        <div class="dropdown">
+            <button class="btn btn-outline-success dropdown-toggle" data-bs-toggle="dropdown">
+                + Receita
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'adicionar_receita' %}?registro={{registro.id}}">Item</a></li>
+                <li><a class="dropdown-item" href="{% url 'criar_grupo' %}?tipo=receita&registro={{registro.id}}">Grupo</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="mb-5">
+        <!-- DESPESAS - estilo chat lado esquerdo -->
+        {% for tipo, d, prioridade in despesas %}
+        <div class="d-flex justify-content-start mb-2">
+          <div class="balao-esquerda {% if d.grupo %}balao-grupo{% endif %} position-relative">
+            {% if d.item %}
+              <a href="{% url 'editar_item' d.item.id %}">
+                {{ d.item.nome }}<br>R$ {{ d.item.valor }}
+              </a>
+            {% elif d.grupo %}
+              <a href="{% url 'grupo' d.grupo.id %}" class="fw-bold">
+                <i class="bi bi-folder-fill me-1"></i>{{ d.grupo.nome }}<br>R$ {{ d.grupo.valor_total }}
+              </a>
+            {% endif %}
+            {% if tipo == 'despesa' and d.id %}
+              <a href="{% url 'deletar_despesa' d.id %}" onclick="return confirm('Excluir despesa?')" class="position-absolute top-0 end-0 text-decoration-none px-1">×</a>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+        
+       
+    
+        <!-- RECEITAS - estilo chat lado direito -->
+        {% for tipo, r, prioridade in receitas %}
+        <div class="d-flex justify-content-end mb-2">
+          <div class="balao-direita {% if r.grupo %}balao-grupo{% endif %} position-relative">
+            {% if r.item %}
+              <a href="{% url 'editar_item' r.item.id %}">
+                {{ r.item.nome }}<br>R$ {{ r.item.valor }}
+              </a>
+            {% elif r.grupo %}
+              <a href="{% url 'grupo' r.grupo.id %}" class="fw-bold">
+                <i class="bi bi-folder-fill me-1"></i>{{ r.grupo.nome }}<br>R$ {{ r.grupo.valor_total }}
+              </a>
+            {% endif %}
+            {% if tipo == 'receita' and r.id %}
+              <a href="{% url 'deletar_receita' r.id %}" onclick="return confirm('Excluir receita?')" class="position-absolute top-0 start-0 text-decoration-none px-1">×</a>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+        
+      
+    
+    </div>
+</div>
+{% endblock %}

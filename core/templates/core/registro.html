@@ -2,20 +2,38 @@
 {% load static %}
 {% block content %}
 <style>
-    body::before {
-      content: "🚀 CSS aplicado!";
-      color: green;
-      font-size: 14px;
-      position: absolute;
-      top: 5px;
-      right: 10px;
-    }
-  </style>
+  body::before {
+    content: "🚀 CSS aplicado!";
+    color: green;
+    font-size: 14px;
+    position: absolute;
+    top: 5px;
+    right: 10px;
+  }
   
-<div class="container mt-3">
+  /* Estilo para indicar registro bloqueado */
+  .registro-bloqueado {
+      position: relative;
+  }
+  .registro-bloqueado::after {
+      content: "QUITADO - Somente visualização";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      background-color: rgba(0,0,0,0.7);
+      color: white;
+      text-align: center;
+      padding: 5px;
+      font-weight: bold;
+      z-index: 1000;
+  }
+</style>
+  
+<div class="container mt-3 {% if bloqueado %}registro-bloqueado{% endif %}">
   <h5 class="text-center mb-3">
     {{ registro.nome }} - {{ registro.situacao }}
-</h5>
+  </h5>
   
     <div class="d-flex justify-content-between text-center mb-4">
         <div class="card w-100 mx-1 card-total card-despesa text-dark border-0">
@@ -34,7 +52,7 @@
             </div>
         </div>
     </div>
-
+    {% if not bloqueado %}
     <div class="d-flex justify-content-between mb-3">
         <div class="dropdown">
             <button class="btn btn-outline-danger dropdown-toggle" data-bs-toggle="dropdown">
@@ -55,52 +73,48 @@
             </ul>
         </div>
     </div>
+    {% endif %}
 
     <div class="mb-5">
-        <!-- DESPESAS - estilo chat lado esquerdo -->
-        {% for tipo, d, prioridade in despesas %}
-        <div class="d-flex justify-content-start mb-2">
-          <div class="balao-esquerda {% if d.grupo %}balao-grupo{% endif %} position-relative">
-            {% if d.item %}
-              <a href="{% url 'editar_item' d.item.id %}">
-                {{ d.item.nome }}<br>R$ {{ d.item.valor }}
-              </a>
-            {% elif d.grupo %}
-              <a href="{% url 'grupo' d.grupo.id %}" class="fw-bold">
-                <i class="bi bi-folder-fill me-1"></i>{{ d.grupo.nome }}<br>R$ {{ d.grupo.valor_total }}
-              </a>
-            {% endif %}
-            {% if tipo == 'despesa' and d.id %}
-              <a href="{% url 'deletar_despesa' d.id %}" onclick="return confirm('Excluir despesa?')" class="position-absolute top-0 end-0 text-decoration-none px-1">×</a>
-            {% endif %}
-          </div>
+      <!-- DESPESAS -->
+      {% for tipo, d, prioridade in despesas %}
+      <div class="d-flex justify-content-start mb-2">
+        <div class="balao-esquerda {% if d.grupo %}balao-grupo{% endif %} {% if d.item and not d.item.checked %}item-nao-marcado{% endif %} position-relative">
+          {% if d.item %}
+            <a href="{% if not bloqueado %}{% url 'editar_item' d.item.id %}{% else %}#{% endif %}" {% if not d.item.checked or bloqueado %}class="text-muted" style="pointer-events: none;"{% endif %}>
+              {{ d.item.nome }}<br>R$ {{ d.item.valor }}
+            </a>
+          {% elif d.grupo %}
+            <a href="{% if not bloqueado %}{% url 'grupo' d.grupo.id %}{% else %}#{% endif %}" class="fw-bold{% if bloqueado %}text-muted" style="pointer-events: none;{% endif %}">
+              <i class="bi bi-folder-fill me-1"></i>{{ d.grupo.nome }}<br>R$ {{ d.grupo.valor_total }}
+            </a>
+          {% endif %}
+          {% if tipo == 'despesa' and d.id %}
+            <a href="{% url 'deletar_despesa' d.id %}" onclick="return confirm('Excluir despesa?')" class="position-absolute top-0 end-0 text-decoration-none px-1">×</a>
+          {% endif %}
         </div>
-        {% endfor %}
-        
-       
-    
-        <!-- RECEITAS - estilo chat lado direito -->
-        {% for tipo, r, prioridade in receitas %}
-        <div class="d-flex justify-content-end mb-2">
-          <div class="balao-direita {% if r.grupo %}balao-grupo{% endif %} position-relative">
-            {% if r.item %}
-              <a href="{% url 'editar_item' r.item.id %}">
-                {{ r.item.nome }}<br>R$ {{ r.item.valor }}
-              </a>
-            {% elif r.grupo %}
-              <a href="{% url 'grupo' r.grupo.id %}" class="fw-bold">
-                <i class="bi bi-folder-fill me-1"></i>{{ r.grupo.nome }}<br>R$ {{ r.grupo.valor_total }}
-              </a>
-            {% endif %}
-            {% if tipo == 'receita' and r.id %}
-              <a href="{% url 'deletar_receita' r.id %}" onclick="return confirm('Excluir receita?')" class="position-absolute top-0 start-0 text-decoration-none px-1">×</a>
-            {% endif %}
-          </div>
-        </div>
-        {% endfor %}
-        
+      </div>
+      {% endfor %}
       
-    
-    </div>
+      <!-- RECEITAS -->
+      {% for tipo, r, prioridade in receitas %}
+      <div class="d-flex justify-content-end mb-2">
+        <div class="balao-direita {% if r.grupo %}balao-grupo{% endif %} {% if r.item and not r.item.checked %}item-nao-marcado{% endif %} position-relative">
+          {% if r.item %}
+            <a href="{% if not bloqueado %}{% url 'editar_item' r.item.id %}{% else %}#{% endif %}" {% if not r.item.checked or bloqueado %}class="text-muted"  style="pointer-events: none;"{% endif %}>
+              {{ r.item.nome }}<br>R$ {{ r.item.valor }}
+            </a>
+          {% elif r.grupo %}
+            <a href="{% if not bloqueado %}{% url 'grupo' r.grupo.id %}{% else %}#{% endif %}" class="fw-bold {% if bloqueado %}text-muted" style="pointer-events: none;{% endif %}">
+              <i class="bi bi-folder-fill me-1"></i>{{ r.grupo.nome }}<br>R$ {{ r.grupo.valor_total }}
+            </a>
+          {% endif %}
+          {% if tipo == 'receita' and r.id %}
+            <a href="{% url 'deletar_receita' r.id %}" onclick="return confirm('Excluir receita?')" class="position-absolute top-0 start-0 text-decoration-none px-1">×</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+  </div>
 </div>
 {% endblock %}

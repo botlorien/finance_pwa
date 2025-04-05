@@ -25,10 +25,13 @@ class ItemForm(forms.ModelForm):
         if self.tipo in ('receita', 'criacao'):
             self.fields.pop('prioridade', None)
         else:
-            # Gera uma lista padrão de prioridades de 1 a 50
-            opcoes = [(i, f'Prioridade {i}') for i in range(1, 5)]
-            self.fields['prioridade'].widget = forms.Select(choices=opcoes)
-
+            opcoes = [(i, f'Prioridade {i}') for i in range(1, 51)]
+            self.fields['prioridade'].widget = forms.Select(
+                choices=opcoes,
+                attrs={
+                    'class': 'form-select select2',  # Adicione a classe select2
+                }
+            )
     def clean_prioridade(self):
         # Ignora validação se não for despesa
         return self.cleaned_data.get('prioridade')
@@ -51,8 +54,13 @@ class GrupoForm(forms.ModelForm):
             self.fields.pop('prioridade', None)
         else:
             # Gera uma lista padrão de prioridades de 1 a 50
-            opcoes = [(i, f'Prioridade {i}') for i in range(1, 5)]
-            self.fields['prioridade'].widget = forms.Select(choices=opcoes)
+            opcoes = [(i, f'Prioridade {i}') for i in range(1, 51)]
+            self.fields['prioridade'].widget = forms.Select(
+                choices=opcoes,
+                attrs={
+                    'class': 'form-select select2',  # Adicione a classe select2
+                }
+            )
 
     def clean_prioridade(self):
         # Sem validação de conflito agora

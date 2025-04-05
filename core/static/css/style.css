@@ -329,3 +329,10 @@ canvas {
   background-color: #786c3c;
   color: #fff;
 }
+.item-nao-marcado {
+  opacity: 0.7;
+  text-decoration: line-through;
+}
+.item-nao-marcado a {
+  text-decoration: line-through;
+}

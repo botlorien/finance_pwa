@@ -7,6 +7,7 @@ from datetime import datetime
 from .forms import ItemForm, GrupoForm
 from django.http import Http404
 from django.views.decorators.http import require_POST
+from django.contrib import messages
 
 def get_itens_do_usuario(user):
     return Item.objects.filter(
@@ -19,7 +20,10 @@ def get_itens_do_usuario(user):
 
 @login_required
 def home(request):
-    registros = Registro.objects.filter(user=request.user)
+    registros = Registro.objects.filter(user=request.user).order_by(
+        '-ano_ref',  # Ordem decrescente por ano (do mais recente)
+        '-mes_ref'   # Ordem decrescente por mês (do mais recente)
+    )
     return render(request, 'core/home.html', {'registros': registros})
 
 @login_required
@@ -104,6 +108,8 @@ def adicionar_receita(request):
 @login_required
 def registro(request, pk):
     reg = get_object_or_404(Registro, pk=pk, user=request.user)
+    # Verificar se o registro está quitado
+    bloqueado = reg.situacao == 'QUITADA'
 
     despesas = Despesa.objects.filter(registro=reg)
     receitas = Receita.objects.filter(registro=reg)
@@ -123,16 +129,21 @@ def registro(request, pk):
     despesas_ordenadas = sorted(despesas_unificadas, key=lambda x: x[2])
     receitas_ordenadas = sorted(receitas_unificadas, key=lambda x: x[2])
 
+    checked_despesas = [d for d in despesas if not d.item or d.item.checked is True]
+    checked_receitas = [d for d in receitas if not d.item or d.item.checked is True]
+    
     total_despesas = sum(
-        d.item.valor if d.item else d.grupo.valor_total() for d in despesas
+        d.item.valor if d.item else d.grupo.valor_total() for d in checked_despesas
     )
     total_receitas = sum(
-        r.item.valor if r.item else r.grupo.valor_total() for r in receitas
+        r.item.valor if r.item else r.grupo.valor_total() for r in checked_receitas
     )
     saldo = total_receitas - total_despesas
 
-    reg.saldo = saldo
-    reg.save()
+    # Atualizar saldo apenas se não estiver quitado
+    if not bloqueado:
+        reg.saldo = saldo
+        reg.save()
 
     return render(request, 'core/registro.html', {
         'registro': reg,
@@ -141,6 +152,7 @@ def registro(request, pk):
         'total_despesas': total_despesas,
         'total_receitas': total_receitas,
         'saldo': saldo,
+        'bloqueado': bloqueado,  # Adiciona esta variável ao contexto
     })
 
 
@@ -404,26 +416,38 @@ def dashboard(request):
     if mes:
         registros = registros.filter(mes_ref=mes)
 
-    despesas = Despesa.objects.filter(registro__in=registros)
-    receitas = Receita.objects.filter(registro__in=registros)
-    print(receitas)
+    despesas = Despesa.objects.filter(
+        registro__in=registros
+    ).filter(
+        Q(item__isnull=True) | Q(item__checked=True)
+    )
 
+    # Filtra receitas com a mesma lógica
+    receitas = Receita.objects.filter(
+        registro__in=registros
+    ).filter(
+        Q(item__isnull=True) | Q(item__checked=True)
+    )
     if item_nome:
         despesas = despesas.filter(Q(item__nome__icontains=item_nome) | Q(grupo__nome__icontains=item_nome))
         receitas = receitas.filter(Q(item__nome__icontains=item_nome) | Q(grupo__nome__icontains=item_nome))
 
     total_despesa = sum(d.item.valor if d.item else d.grupo.valor_total() for d in despesas)
     total_receita = sum(r.item.valor if r.item else r.grupo.valor_total() for r in receitas)
-    print(total_receita)
+
     saldo = total_receita - total_despesa
-    print(saldo)
+
     # valores únicos para os filtros
     anos = Registro.objects.filter(user=request.user) \
                           .values_list('ano_ref', flat=True).distinct().order_by('ano_ref')
     meses = Registro.objects.filter(user=request.user) \
                            .values_list('mes_ref', flat=True).distinct().order_by('mes_ref')
-    itens = Item.objects.values_list('nome', flat=True).distinct().order_by('nome')
-
+    #itens = Item.objects.values_list('nome', flat=True).distinct().order_by('nome')
+    # Filtra itens do usuário (de despesas e receitas)
+    itens = Item.objects.filter(
+        Q(despesa__registro__user=request.user) | 
+        Q(receita__registro__user=request.user)
+    ).distinct().order_by('nome')
 
 
     from decimal import Decimal
@@ -465,8 +489,6 @@ def dashboard(request):
                                  .annotate(qtd=Count('registro__mes_ref', distinct=True)) \
                                  .filter(qtd__gt=1)
 
-    print(total_receita)
-    print(saldo)
     return render(request, 'core/dashboard.html', {
         'ano': ano,
         'mes': mes,
