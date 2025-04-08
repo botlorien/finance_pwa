@@ -33,7 +33,7 @@
                 
                 <a href="{% url 'grupo_editar_item' grupo.id item.id %}" class="me-auto text-decoration-none 
                     {% if not item.checked %}text-muted text-decoration-line-through{% endif %}">
-                    <strong>{{ item.nome }}</strong> – R$ {{ item.valor }}
+                    <strong>{{ item.quantidade }} x {{ item.nome }}</strong> – R$ {{ item.valor_total }}{% if item.prioridade %}<span class="small" style="font-size: 8px;margin-left: 20px;">P-{{item.prioridade}}</span>{% endif %}
                 </a>
             </form>
 

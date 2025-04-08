@@ -8,10 +8,11 @@ from django.db.models import Q
 class ItemForm(forms.ModelForm):
     class Meta:
         model = Item
-        fields = ['nome', 'valor', 'checked', 'prioridade']
+        fields = ['nome', 'valor', 'quantidade', 'checked', 'prioridade']
         widgets = {
             'nome': forms.TextInput(attrs={'class': 'form-control', 'list': 'sugestoes'}),
             'valor': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Valor'}),
+            'quantidade': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Quantidade', 'min':1}),
             'checked': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 

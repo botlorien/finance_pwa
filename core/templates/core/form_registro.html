@@ -10,11 +10,11 @@
         </div>
         <div class="mb-3">
             <label>Ano de Referência</label>
-            <input type="number" name="ano" class="form-control" value="{{ registro.ano_ref|default:2025 }}" required>
+            <input type="number" name="ano" class="form-control" value="{{ registro.ano_ref|default:0 }}" required>
         </div>
         <div class="mb-3">
             <label>Mês de Referência</label>
-            <input type="number" name="mes" class="form-control" min="1" max="12" value="{{ registro.mes_ref|default:1 }}" required>
+            <input type="number" name="mes" class="form-control" min="0" max="12" value="{{ registro.mes_ref|default:0 }}" required>
         </div>
         <div class="mb-3">
             <label>Situação</label>

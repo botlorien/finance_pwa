@@ -30,9 +30,11 @@ def home(request):
 def adicionar_registro(request):
     if request.method == 'POST':
         nome = request.POST.get('nome')
-        ano = int(request.POST.get('ano'))
-        mes = int(request.POST.get('mes'))
+        ano = request.POST.get('ano')
+        mes = request.POST.get('mes')
         situacao = request.POST.get('situacao')
+        ano = int(ano) if str(ano).isdigit() else 0
+        mes = int(mes) if str(mes).isdigit() else 0
 
         novo = Registro.objects.create(
             nome=nome,
@@ -51,9 +53,14 @@ def editar_registro(request, pk):
     registro = get_object_or_404(Registro, pk=pk, user=request.user)
 
     if request.method == 'POST':
+        ano = request.POST.get('ano')
+        mes = request.POST.get('mes')
+        ano = int(ano) if str(ano).isdigit() else 0
+        mes = int(mes) if str(mes).isdigit() else 0
+
         registro.nome = request.POST.get('nome')
-        registro.ano_ref = int(request.POST.get('ano'))
-        registro.mes_ref = int(request.POST.get('mes'))
+        registro.ano_ref = ano
+        registro.mes_ref = mes
         registro.situacao = request.POST.get('situacao')
         registro.save()
         return redirect('registro', pk=registro.pk)
@@ -133,12 +140,20 @@ def registro(request, pk):
     checked_receitas = [d for d in receitas if not d.item or d.item.checked is True]
     
     total_despesas = sum(
-        d.item.valor if d.item else d.grupo.valor_total() for d in checked_despesas
+        d.item.valor * d.item.quantidade if d.item else d.grupo.valor_total() for d in checked_despesas
     )
     total_receitas = sum(
-        r.item.valor if r.item else r.grupo.valor_total() for r in checked_receitas
+        r.item.valor * r.item.quantidade if r.item else r.grupo.valor_total() for r in checked_receitas
     )
     saldo = total_receitas - total_despesas
+
+    for tipo, d, prioridade in despesas_ordenadas:
+        if d.item:
+            d.item.valor_total = d.item.valor * d.item.quantidade
+
+    for tipo, r, prioridade in receitas_ordenadas:
+        if r.item:
+            r.item.valor_total = r.item.valor * r.item.quantidade
 
     # Atualizar saldo apenas se não estiver quitado
     if not bloqueado:
@@ -409,7 +424,7 @@ def dashboard(request):
     mes = request.GET.get('mes')
     item_nome = request.GET.get('item')
 
-    registros = Registro.objects.filter(user=request.user)
+    registros = Registro.objects.filter(user=request.user, situacao='QUITADA')
 
     if ano:
         registros = registros.filter(ano_ref=ano)
@@ -432,8 +447,8 @@ def dashboard(request):
         despesas = despesas.filter(Q(item__nome__icontains=item_nome) | Q(grupo__nome__icontains=item_nome))
         receitas = receitas.filter(Q(item__nome__icontains=item_nome) | Q(grupo__nome__icontains=item_nome))
 
-    total_despesa = sum(d.item.valor if d.item else d.grupo.valor_total() for d in despesas)
-    total_receita = sum(r.item.valor if r.item else r.grupo.valor_total() for r in receitas)
+    total_despesa = sum(d.item.valor * d.item.quantidade if d.item else d.grupo.valor_total() for d in despesas)
+    total_receita = sum(r.item.valor * r.item.quantidade if r.item else r.grupo.valor_total() for r in receitas)
 
     saldo = total_receita - total_despesa
 
@@ -458,7 +473,7 @@ def dashboard(request):
     top_dict = defaultdict(Decimal)
     for d in despesas:
         if d.item:
-            top_dict[d.item.nome] += d.item.valor
+            top_dict[d.item.nome] += d.item.valor * d.item.quantidade
         elif d.grupo:
             top_dict[d.grupo.nome] += Decimal(d.grupo.valor_total())
 
@@ -472,7 +487,7 @@ def dashboard(request):
     top_dict = defaultdict(Decimal)
     for r in receitas:
         if r.item:
-            top_dict[r.item.nome] += r.item.valor
+            top_dict[r.item.nome] += r.item.valor * r.item.quantidade
         elif r.grupo:
             top_dict[r.grupo.nome] += Decimal(r.grupo.valor_total())
 

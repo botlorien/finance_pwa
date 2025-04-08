@@ -8,8 +8,8 @@ class Registro(models.Model):
     ]
 
     nome = models.CharField(max_length=100, default='Novo Registro')
-    ano_ref = models.IntegerField()
-    mes_ref = models.IntegerField()
+    ano_ref = models.IntegerField(blank=True, null=True)
+    mes_ref = models.IntegerField(blank=True, null=True)
     saldo = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     situacao = models.CharField(max_length=10, choices=SITUACAO_CHOICES, default='PENDENTE')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -22,11 +22,12 @@ class Registro(models.Model):
 class Item(models.Model):
     nome = models.CharField(max_length=100)
     valor = models.DecimalField(max_digits=10, decimal_places=2)
+    quantidade = models.IntegerField(default=1)
     checked = models.BooleanField(default=True)
     prioridade = models.PositiveIntegerField(null=True, blank=True)
 
     def __str__(self):
-        return self.nome
+        return f'{self.quantidade} - {self.nome}'
 
 class Grupo(models.Model):
     nome = models.CharField(max_length=100)
@@ -34,15 +35,19 @@ class Grupo(models.Model):
     prioridade = models.PositiveIntegerField(null=True, blank=True)  # <--- aqui
     
     def valor_total(self):
-        return sum(item.valor for item in self.itens.filter(checked=True))
+        return sum(item.valor * item.quantidade for item in self.itens.filter(checked=True))
 
     def __str__(self):
         return self.nome
     
     @property
     def itens_ordenados(self):
+        itens = []
+        for item in self.itens.all():
+            item.valor_total = item.valor * item.quantidade
+            itens.append(item)
         return sorted(
-            self.itens.all(),
+            itens,
             key=lambda i: i.prioridade if i.prioridade is not None else 9999
         )
 

@@ -30,6 +30,15 @@
             {% endif %}
         </div>
 
+        <!-- Campo QUANTIDADE -->
+        <div class="mb-3">
+            {{ form.quantidade.label_tag }}
+            {{ form.quantidade }}
+            {% if form.quantidade.errors %}
+                <div class="text-danger small">{{ form.quantidade.errors }}</div>
+            {% endif %}
+        </div>
+
         <!-- Checkbox CONTABILIZAR -->
         <div class="form-check mb-3">
             {{ form.checked }}
