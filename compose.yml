@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  cashpilot:
+    restart: always
+    user: root
+    build: .
+    container_name: cashpilot
+    environment:
+      - DATABASE_URL=$DATABASE_URL
+      - DEBUG=$DEBUG
+      - DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY
+      - SUPERUSER_PASSWORD=$SUPERUSER_PASSWORD
+    ports:
+      - 8000:8000
+    networks:
+      - postgresql_network
+    deploy:
+      resources:
+        limits:
+          memory: 3000M
+          cpus: '3'
+
+networks:
+  postgresql_network:
+    external: true

@@ -10,4 +10,4 @@ echo "➡️ Criando superusuário, se necessário..."
 python create_superuser.py
 
 echo "✅ Iniciando Gunicorn..."
-exec gunicorn finance_pwa.wsgi:application --bind 0.0.0.0:$PORT
+exec gunicorn finance_pwa.wsgi:application --bind 0.0.0.0:8000

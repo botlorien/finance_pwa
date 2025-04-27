@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  cashpilot:
+    restart: always
+    user: root
+    build: .
+    container_name: cashpilot
+    environment:
+      - DATABASE_URL=$DATABASE_URL
+      - DEBUG=$DEBUG
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.cashpilot.rule=Host(`cashpilot.duckdns.org`)"
+      - "traefik.http.routers.cashpilot.entrypoints=websecure"
+      - "traefik.http.routers.cashpilot.tls=true"
+      - "traefik.http.services.cashpilot.loadbalancer.server.port=9000"
+
+    deploy:
+      resources:
+        limits:
+          memory: 6000M
+          cpus: '20'
+
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    external: true  # Usa a rede bridge existente
+
